@@ -5,7 +5,7 @@ import glob
 
 
 cap = cv2.VideoCapture(0)
-webcam_URL = "http://192.168.15.4:8080/shot.jpg"
+webcam_URL = "http://172.22.236.178:8080/shot.jpg"
 
 chessboard_x = 4
 chessboard_y = 4
@@ -87,7 +87,8 @@ splited_input = inp.split(",") #separa a entrada em um array que divide cada pal
 x = splited_input[0] # recebe a função que vai representar o eixo x na curva
 y = splited_input[1] # recebe a função que vai representar o eixo y na curva
 z = splited_input[2] # recebe a função que vai representar o eixo z na curva
-times = 1 
+times = 1
+#ret, corners = cv2.findChessboardCorners(gray, (chessboard_x,chessboard_y),None) 
 while True:
 	if img_source == 2:
 		imgR=urllib.request.urlopen(webcam_URL)
@@ -97,7 +98,8 @@ while True:
 		ret1,img = cap.read()
 	cv2.imshow("Webcam",img)
 	gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-	ret, corners = cv2.findChessboardCorners(gray, (chessboard_x,chessboard_y),None)
+	if(points_counter < 3):
+		ret, corners = cv2.findChessboardCorners(gray, (chessboard_x,chessboard_y),None)
 	if ret == True:
 
 		objpoints.append(objp)
@@ -121,8 +123,8 @@ while True:
 			points3d = []
 			for i in range(150):
 				t = i/5
-				#points3d.append([2,2,np.sin(t)])
-				points3d.append([read_function(x,t),read_function(y,t),read_function(z,t)]) # Isso aqui que está dentro do parenteses é a curva.
+				points3d.append([np.cos(t),np.sin(t),t/2])
+				#points3d.append([read_function(x,t),read_function(y,t),read_function(z,t)]) # Isso aqui que está dentro do parenteses é a curva.
 			points = np.asarray(points3d).reshape(-1,3)
 			# Essa função acha os pontos na imagem que são correspondentes aos pontos no mundo 3d
 			points2d, jac = cv2.projectPoints(points, rvecs, tvecs, mtx, dist)
